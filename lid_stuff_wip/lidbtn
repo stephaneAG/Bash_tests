@@ -1,0 +1,6 @@
+# /etc/acpi/events/lidbtn
+# Called when the user closes or opens the lid
+
+# desactivated by Tef ( to use the Epoc headset in a faraday box )
+event=button[ /]lid
+action=/etc/acpi/lid.sh
