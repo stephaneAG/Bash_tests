@@ -1,0 +1,3 @@
+hello there
+I am a text file content
+I got to be prepended to another dummy-dumb file :)
