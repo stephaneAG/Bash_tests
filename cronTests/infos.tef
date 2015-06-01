@@ -1,0 +1,104 @@
+# R: personal notes on CRON
+# Cron = CronTab = Chrono Table = Planification Table
+
+# each user has a crontab
+# the system also has one
+
+# it is advised to use crontab -e instead of manually editing the /etc/crontab file directly
+
+# to use Cron, we simply add entries in our crontab
+# an entry is 2 parts & a linefeed ( "\n" )
+
+# the 1st part describes when an action 'll be executed
+# it contains 5 fields, separated by a space or a tab, & contains a number, a * or text
+# the fields are, in order: minute | hour | day in month | month | day in week
+
+# the 2nd part describes the command to invoke
+
+#
+# Examples #
+#
+
+# executing /usr/bin/apt-get update each day, of each month, at 03:05, with <usersame> rights
+5 3  * *  * username /usr/bin/apt-get update
+
+# execute stuff every 5 minutes to display a message
+*/5 9-17 * * mon,tue,wed,thu,fri wall "Où en es tu ?" # job day ( 9am - 5pm )
+
+# recall a birthday at 9h in the morning of january the 10th each year
+0 9 10 jan  * echo "C'est l'anniversaire de ta Maman aujourd'hui !" >>~/readme
+
+
+#
+# Interesting shortcuts #
+#
+
+# @reboot    # executes during reboot with user rights, very useful
+# @yearly, @annually, @monthly, @weekly, @daily, @midnight, @hourly
+
+#
+# Also #
+#
+
+# to execute graphical apps, we have to make sure the root user has access to the display
+# is active ( xhost ), for example by executing ( manually or in a startup script like rc.local )
+xhost + local:root
+
+# then, we have to precise wich display to use during the execution of the command using a prefix
+0 8 * * * DISPLAY=:0.0 totem "myZikFile.mp3"
+
+# to see the content of our crontab
+crontab -l
+
+# to edit it
+crontab -e
+
+# ( using the above ,the file, supposed to be only editer by the editor is at:
+#   /var/spool/cron/crontabs/<user> )
+
+# for zenity dialog, .. we have to add the display prefix to our command
+*/5 * * * * DISPLAY=:0 zenity --info --text="All is fine" # R: xhost + if needed
+
+
+#
+# Other considerations #
+#
+
+# if we want a command with a higher level of permissions to execute regularly,
+# we have to specify to use the root crontab
+sudo crontab -e
+
+# r: the above command directly edit the /var/spool/cron/crontabs/<root_user>
+
+# depending on the comand to be invoked, we laso have to change the PATH variable or add the
+# following line to the crontab file
+PATH=/usr/sbin:/usr/bin:/sbin:/bin
+
+# in case a crontab refuses to execute, verify that the package mailutils is installed:
+# cron actually logs its actions by mailing the current user
+# Or, alternatively, we can add at the beginning
+MAILTO=""
+
+# if a crontab still refuses to execute, maybe cron has crashed, so we can reinitialize it with
+sudo service cron restart
+
+
+
+#
+# Edit the crontab programatically #
+#
+
+#
+# add a crontab: ( R: the "-" is STDOUT on Linux )
+# (crontab -u stephaneag -l ; echo "*/3 *  * * *   DISPLAY=:0 notify-send 'A Title' 'Hello World' -i /usr/share/pixmaps/debian-logo.png") | crontab -u stephaneag -
+# 
+# remove a crontab:
+# crontab -u stephaneag -l | grep -v "DISPLAY=:0 notify-send 'A Title' 'Hello World' -i /usr/share/pixmaps/debian-logo.png" | crontab -u stephaneag -
+#
+# R:
+# backup a cron file:
+# crontab -l > bckp_file
+#
+# add stuff to it ( overwrite ):
+# crontab -l > overriden_file
+# stuff >> overriden_file
