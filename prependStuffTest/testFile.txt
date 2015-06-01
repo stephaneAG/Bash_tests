@@ -1,0 +1,6 @@
+hello there
+I am a text file content
+I got to be prepended to another dummy-dumb file :)
+Hello again !
+I am a second text file ;D
+.. and this is the end, my lonely friend ^^
