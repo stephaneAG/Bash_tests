@@ -1,0 +1,23 @@
+# syntax
+# 0 5 * * 1 tar -zcf /var/backups/home.tgz /home/
+# 
+# For more information see the manual pages of crontab(5) and cron(8)
+# 
+# m h  dom mon dow   command
+
+# -- StephaneAG crontab [ added manually using crontab -e & nano editor ] --
+# disable mailing
+MAILTO=""
+
+# test rule using zenity info - works
+#*/3 *  * * *   DISPLAY=:0 zenity --info --text="Cron on the Rocks !"
+
+# test rule using notify-send - works
+#*/3 *  * * *   DISPLAY=:0 notify-send "A Title" "Hello World" -i /usr/share/pixmaps/debian-logo.png
+
+# other test rule - works
+#3 *  * * *   echo "Sauvegarde de nuit: $(date)" >>/home/stephaneag/Documents/Development/dev__shell/cronTests/tefCronLog.log
+
+# rule that does stg every 5 minutes - works
+#*/5 *  * * *   echo "Cron call: $(date)" >>/home/stephaneag/Documents/Development/dev__shell/cronTests/tef5minCronLog.log
+
