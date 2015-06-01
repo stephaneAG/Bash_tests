@@ -1,0 +1,32 @@
+# R: we can use the CUPS ( Common Unix Printing System ), wich is runnig on localhost:631
+
+# to see all the connected printers, as well as the default one:
+lpstat -p -d
+# ( the -d parameter is to list the default one )
+
+# to set a default printer
+lpoptions -d printerName # by name
+# or
+lpoptions -d printer # default
+
+# to print some basic text
+lpr test
+# or
+lp test
+
+# to print a file
+lpr filename
+
+# to print the output of a program
+program | lp
+# or
+program | lp -d printer
+# or
+program | lpr
+# or
+program | lpr -P printer
+
+# R: to print to a specific printer
+lp -d printerName filename
+# or
+lpr -P printerName filename
