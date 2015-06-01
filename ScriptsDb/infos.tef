@@ -1,0 +1,18 @@
+# add:
+- functions, helpers & stuff from recovered stephaneag_bashrc ( .. )
+
+# a directory ( scriptsDb ) residing in the current directory is used as container for tmp files used by some scripts
+# the script actually make use of the current directory & its files through two commands:
+
+# stag__scriptsDb_get <key_name>        # get the content of a file with that name
+# stag__scriptsDb_getClean <key_name>   # get the content of a file with that name & delete it
+
+# stag__scriptsDb_set <key_name> <value># create/update the content of a file with same name
+
+# as we use a simple logic & not subdirs [yet?], it is preferable to "namespace" keys as so:
+# myscriptname.keyname
+# or
+# myscriptname.subnamespace1.keyname
+
+# also, we could add a command that check the presence of a particular key
+stag__scriptsDb_exist <key_name>
