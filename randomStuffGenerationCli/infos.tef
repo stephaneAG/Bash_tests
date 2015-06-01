@@ -1,0 +1,25 @@
+# R: the following are different ways to generate random stuff from the cli
+
+# 1: use SHA1 to hash the date, run through base64 & output the top 32 chars
+date +%s | sha256sum | base64 | head -c 32 ; echo
+
+# 2: use built-in /dev/random, filters chars & output the top 32 chars
+< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c32;echo;
+
+# 3: like the above one, but doing the work in reverse
+tr -cd '[:alnum:]' < /dev/urandom | fold -w30 | head -n1
+
+# 4: use the strings cmd to ouput printable strings from a file, here a urandom feature
+strings /dev/urandom | grep -o '[[:alnum:]]' | head -n 30 | tr -d '\n'; echo
+
+# 5: shorter ( in result ) version of the above
+< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c6
+
+# 6: using the dd cmd
+dd if=/dev/urandom bs=1 count=32 2>/dev/null | base64 -w 0 | rev | cut -b 2- | rev
+
+# 7: if using this all the time, we can source the following fcn to then use "randpw"
+randpw(){ < /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c16;echo;}
+
+# 8: the simpler of all
+date | md5sum
