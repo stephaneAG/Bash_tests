@@ -1,0 +1,67 @@
+# R: following are some useful calls to get / set stuff from / to a gnome-terminal profile
+#    this can be useful if we want to make available some background-image related commands
+#    ex: get a frame from a cam feed & use that to overwrit ean image used as a profile's background
+
+# get a list of the profiles
+gconftool-2 --get /apps/gnome-terminal/global/profile_list
+# -\>[Profile0,Default,Profile1,Profile2]
+
+# find wich attribute are configurable
+gconftool-2 -a "/apps/gnome-terminal/profiles/Default" | grep background
+-\> (..)
+-\> background_image = /home/stephaneag/Pictures/wallpapers/wallpaper.png
+-\> background_color = #000000000000
+-\> background_type = transparent
+gconftool-2 -a "/apps/gnome-terminal/profiles/Default" | grep color
+-\> use_theme_colors = false
+-\> foreground_color = #EEEEEEEEECEC
+-\> background_color = #000000000000
+-\> ( .. )
+# also, same as the above but not using grep at all
+gconftool-2 -a "/apps/gnome-terminal/profiles/Default"
+
+# get the ID of the profile currently in use:
+stag__gnomeTerm_getProfile
+-\> Profile1
+
+# get the type of background of a profile ( here the Default )
+gconftool-2 --get /apps/gnome-terminal/profiles/Default/background_type
+# -\> transparent || solid || image
+
+# get the background image of a profile
+gconftool-2 --get /apps/gnome-terminal/profiles/Default/background_image
+-\\> /home/stephaneag/Pictures/wallpapers/wallpaper.png
+
+# get the foreground color of a profile
+gconftool-2 --get /apps/gnome-terminal/profiles/Default/foreground_color
+-\\> #EEEEEEEEECEC
+
+# get the background color of a profile
+gconftool-2 --get /apps/gnome-terminal/profiles/Default/background_color
+-\\> #000000000000
+
+# get the usage of the theme colors
+gconftool-2 --get /apps/gnome-terminal/profiles/Default/use_theme_colors
+-\\> false
+
+# instead of getting stuff, we can set stuff as well, but we have to pass the type of the value
+
+# set the type of background of a profile
+# to store it before overwrite:  currBckgrndType=`gconftool-2 --get /apps/gnome-terminal/profiles/Default/background_type`
+gconftool-2 --set /apps/gnome-terminal/profiles/Default/background_type --type string image # possible values: transparent | solid | image
+
+# set the background image of a profile
+# to store it before overwrite:  currBckgrndImg=`gconftool-2 --get /apps/gnome-terminal/profiles/Default/background_image`
+gconftool-2 --set /apps/gnome-terminal/profiles/Default/background_image --type string /home/stephaneag/Pictures/wallpapers/wallpaper.png
+
+# get the foreground color of a profile
+# to store it before overwrite:  currFrgrndCol=`gconftool-2 --get /apps/gnome-terminal/profiles/Default/foreground_color`
+gconftool-2 --set /apps/gnome-terminal/profiles/Default/foreground_color --type string 
+
+# get the background color of a profile
+# to store it before overwrite:  currBckgrndCol=`gconftool-2 --get /apps/gnome-terminal/profiles/Default/background_color`
+gconftool-2 --set /apps/gnome-terminal/profiles/Default/background_color --type string
+
+# get the usage of the theme colors
+# to store it before overwrite:  currUseThemeCol=`gconftool-2 --get /apps/gnome-terminal/profiles/Default/use_theme_colors`
+gconftool-2 --set /apps/gnome-terminal/profiles/Default/use_theme_colors --type bool false
