@@ -1,0 +1,24 @@
+# Screen config file - simple conf
+
+# skip the startup message
+startup_message off
+
+# add a session name
+session_name simpleconf_session
+
+# Display a caption string below, appearing like tabs and
+# # displaying the window number and application name (by default).
+caption always
+caption string "%{kw}%-w%{wr}%n %t%{-}%+w"
+
+# split screen, & then launch stuff / execute commands
+
+# command to be started on the first screen
+screen 0 top
+
+# split vertically
+split
+
+# switch focus
+focus down
+screen 1 Bash
