@@ -1,0 +1,44 @@
+# The following commands can be useseful when needing to prepend stuff to a file / add lines numbers
+# warn: these were found when musing with cmds, so they may NOT be bullet-proof ;)
+
+# to append the content of a file to another file:
+cat txtToPrepend.txt txtNeedingIntro.txt > testFile.txt
+
+# to prepend dynamix content to a file:
+ echo -e "dynamic line of text \nOther dynamic line of text" | cat - txtNeedingIntro.txt > testFile2.txt
+
+# same as above while also adding line numbers to the output file
+echo -e "dynamic line of text \nOther dynamic line of text" | cat - txtNeedingIntro.txt | nl > testFile3.txt
+
+# R: to add line numbers directly to a file
+nl testFile3.txt | tee > testFile4.txt
+# alternative to the above
+cat testFile2.txt | nl > testFile4.txt
+# other alternative:
+nl testFile2.txt > testFile4.txt
+
+
+# going further:
+
+# we can use the "nl" utility to also add a header & a footer to our [ dynamic / static ] stuff:
+# exampe of a static file already containing all its final content, sectionned for nl
+ nl testStream
+
+# example of dynamic header & footer with stati file comming, but not quite yet :/ :
+echo -e '\:\:\: \nDynamic header ! \n\:\:' | cat - testFile2.txt | tac | xargs -d\n echo -e "Dynamic Footer\n\:\n" | tac > testFile8.txt
+# neither does this one, although close
+echo -e '\:\:\: \nDynamic header ! \n\:\:' | cat - testFile2.txt | tac | xargs -d\n echo -e "Dynamic Footer\n\:\n" | tac > testFile8.txt
+
+
+# 2nd try:
+ echo -e "$(echo -e "\:\:\:\nDynamic header ! \n\:\:" | cat - testFile2.txt)" "\n\:\nDynamic Footer" | nl > testFile10.txt
+# different, working, approach, not using "tac mumbo-jumbo hackety tricks" ;D 
+echo -e "\:\:\:\nDynamic header ! \n\:\:\n" "$(cat testFile2.txt)" "\n\:\nDynamic Footer" | nl > testFile11.txt
+
+# same as the above but this time using dynamic content for the body of the file and not an existing file:
+echo -e "\:\:\:\nDynamic header ! \n\:\:\n" "some body dynamic stuff\n on two different lines " "\n\:\nDynamic Footer" | nl > testFile12.txt
+
+
+# going further ?
+# the following only add lines to the lines containing the specific word passed as arguments of the "bp" parameter:
+nl -bphappy txtWithWordNtimes.txt
