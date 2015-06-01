@@ -1,0 +1,14 @@
+# R: the following simple examples are soooo useful when getting a substring is needed ;)
+
+str='abcdefg'
+n=3
+
+# get the first 3 chars
+#tefFirstThree=abc
+tefFirstThree=${str:0:$n}
+
+# get the last 3 chars
+#tefLastThree=efg
+tefLastThree=${str:${#str} - $n}
+
+# Also, R: bash substrings (  ) & bash string length ( 0 )
