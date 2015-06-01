@@ -1,0 +1,2 @@
+# The current dir contains handy "hacks" to customize the prompt in helpful ways
+# R: the files have to be SOURCED, not EXECUTED for the "PS1" ( the prompt var ) to update
