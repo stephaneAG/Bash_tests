@@ -1,0 +1,25 @@
+# R: split in two horizontally:
+convert -crop 50%x100% +repage madToysLab_LOGO.png horizontal_split%
+# to do the same vertically:
+convert -crop 100%x50% +repage madToysLab_LOGO.png vertical_split%
+
+# Also, to make a grid out of a logo ( here, 3x3 ):
+convert madToysLab_LOGO.png -crop 3x3@  +repage  +adjoin  logo_3x3@_%d.png
+# to split in <n> horizontally:
+convert madToysLab_LOGO.png -crop 3x1@  +repage  +adjoin  logo_3x1@_%d.png
+# to split in <n> vertically ( here, 3 splits ):
+convert madToysLab_LOGO.png -crop 1x3@  +repage  +adjoin  logo_1x3@_%d.png
+
+
+
+# Also (!) => to resize an image to some precise dimensions ( in px ):
+convert -size 150x150 xc:black clean_letters_only -resize 150x150 -gravity center -compose over -composite -quality 75 clean_letters_only__150x150.png
+# same as the above but not specifying a square but rather wider width:
+convert -size 300x150 xc:black clean_logo_only -gravity center -compose over -composite -quality 75 clean_logo_only__300x150_withNoSizeDefined.png
+
+
+# And, last but not least, to crop out/zoom without resizing, we'd do:
+convert -size 300x150 xc:black clean_logo_only -gravity center -compose over -composite -quality 75 clean_logo_only__300x150_withNoSizeDefined.png
+
+
+# that's all folks ;D
