@@ -1,0 +1,5 @@
+dynamic line of text 
+Other dynamic line of text
+Hello again !
+I am a second text file ;D
+.. and this is the end, my lonely friend ^^
