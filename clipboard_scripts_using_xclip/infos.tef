@@ -1,0 +1,10 @@
+# to us a shortcut to use Kupa on Linux:
+# 1: add a symbolic link to the /usr/bin directory ( we must use the ABSOLUTE path for this to work )
+sudo ln -s /home/stephaneag/Documents/Development/dev__shell/clipboard_scripts_using_xclip/Kupa__Linux.sh /usr/bin/kupalinux
+# or
+sudo ln -s $PWD/Kupa__Linux.sh /usr/bin/kupalinux
+
+
+# 2: use a custom shortcut to:
+#    a - simulate a 'Ctrl+C' and then use the Kupa (pre)defined Kupa keyboard shortcut ( hotkey )
+#    b - just copy to clipboard manually & then use the dedicated Kupa keyboard shortcut
