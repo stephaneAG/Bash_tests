@@ -1,0 +1,12 @@
+the 'screenblank' file was found in /usr/share/acpi-support/screenblank
+-> 'll try to replace it by a dummy one to see how it goes ( .. )
+
+/etc/acpi/events/sleepbtn has been modified to called custom script instead of /etc/acpi/sleep.sh
+
+R: to activate / desactivate my little trick to prevent OS suspend:
+gsettings get org.gnome.settings-daemon.plugins.power active # get if true | false
+gsettings set org.gnome.settings-daemon.plugins.power active true # set it
+
+R: try to impl a hacky-hack using the followings:
+xset dpms force on
+# gotta digg what revert screen blanking ( pm-suspend || . /screenblank )
