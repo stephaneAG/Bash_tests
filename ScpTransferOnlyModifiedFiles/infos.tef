@@ -1,0 +1,9 @@
+# R: we can transfer file using the below command:
+scp -rc blowfish /source/dir/* user@domain.com:/destination/dir
+# ( the -c parameter is for the vypher to be used )
+
+# Now, to only send new file or file that have been modified, we can use the following command, wich makes uses of "rsync":
+rsync -ru /source/dir* user@domain.com:/destination/dir
+# the -r parameter is to recursively copy dir ( --recursive )
+# the -u parameter skips all the unmodified files ( --update )
+# Nb: to delete the files at the destination path that no longer exist at the source, we can add the "--delete" parameter
