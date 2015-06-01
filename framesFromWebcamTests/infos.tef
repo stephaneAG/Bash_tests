@@ -1,0 +1,7 @@
+# R: following are some calls that each take a frame from a (web)cam connected & save that as an image
+
+# using mplayer ( nb: the 1st take ever was green )
+mplayer -vo png -frames 1 tv://
+
+# using vlc ( R: the dot is the directory to save the file )
+vlc -I dummy v4l2:///dev/video0 --video-filter scene --no-audio --scene-path /home/stoppal/test --scene-prefix image_prefix --scene-format png vlc://quit --run-time=1
