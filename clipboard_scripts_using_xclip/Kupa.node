@@ -1,0 +1,284 @@
+#!/bin/bash
+
+##	Kupa.node - part of the Kupa Project
+##	by StephaneAG - 2013
+
+# this is a Kupa node file
+
+# does something when passed arguments
+# the processes depends on the platform and the settings
+
+# the following will be replaced by settings found in the 'node_settings.kupa' file
+# the platform: Linux | Mac
+KUPA_PLATFORM="anyOS"
+# the Kupy style: direct | twosteps
+KUPA_KUPY_STYLE="anyKupyStyle"
+
+## constants ##
+
+# number of parameters required ( <kupa_platform> <kupa_kupy_style> ) #
+KUPA_NODE_SETTINGS_PARAMS_NUMBER="2"
+
+# Kupa file pathes #
+KUPA_NODE_SETTINGS_FILE="./node_settings.kupa"
+KUPA_SHARED_FILE="./shared/shared_clipboard.kupa"
+
+# OS constants ( the registered/acepted values for the 'Kupa platform' setting ) #
+KUPA_PLATFORM_MAC="Mac"
+KUPA_PLATFORM_NIX="Linux"
+
+# Kupa style constants ( the registered/acepted values for the 'Kupa kupy style' setting ) #
+KUPA_KUPY_STYLE_DIRECT="direct"
+KUPA_KUPY_STYLE_2STEPS="twosteps"
+
+# role constants ( the registered/acepted command line arguments for the '-klipboard-update' command line parameter of 'Kupa.node' ) #
+# if param is 'sender' -> we display a popup on the system informing the user that his shared clipboard has been updated to the clients present in the 'settings.kupa' file
+KUPA_IS_SENDER="sender"
+# if param is 'receiver' -> it mean that the shared clipboard has just been updated, so we check the 'Kupy style' & act accordingly ( copy to system clicpboard or just inform the user )
+KUPA_IS_RECEIVER="receiver"
+
+## clipboard constants fcns ##
+# Linux
+KUPA_LINUX_RECEIVER_DIRECT_KUPY() {
+# check the presence of the Kupa shared clipboard file and copy it to the system clipboard if present
+if [ -f "$KUPA_SHARED_FILE" ]
+then
+        echo "[DEBUG] A Kupa shared clipboard was found in the ./shared/ directory > copying data to the system clipboard."
+        # copy it to the system clipboard
+	cat "$KUPA_SHARED_FILE" | xclip -selection clipboard
+	# delete it after use
+	rm "$KUPA_SHARED_FILE"
+        echo "[DEBUG] Kupa clipboard was successfully deleted after data copied to system clipboard."
+else
+        echo "[DEBUG] No Kupa shared clipboard found in the ./shared/ directory."
+fi
+}
+# Mac
+KUPA_MAC_RECEIVER_DIRECT_KUPY() {
+# check the presence of the Kupa shared clipboard file and copy it to the system clipboard if present
+if [ -f "$KUPA_SHARED_FILE" ]
+then
+        echo "[DEBUG] A Kupa shared clipboard was found in the ./shared/ directory > copying data to the system clipboard."
+        # copy it to the system clipboard
+	cat "$KUPA_SHARED_FILE" | pbcopy
+        # delete it after use
+        rm "$KUPA_SHARED_FILE"
+        echo "[DEBUG] Kupa clipboard was successfully deleted after data copied to system clipboard."
+else
+        echo "[DEBUG] No Kupa shared clipboard found in the ./shared/ directory."
+fi
+}
+
+## popups constants fcns ##
+# Linux
+KUPA_LINUX_SENDER_NOTIFY() { 
+notify-send "Kupa" "The Kupa shared clipboard has been succefully pushed to specified clients !" -i /usr/share/pixmaps/debian-logo.png 
+}
+KUPA_LINUX_RECEIVER_DIRECT_NOTIFY() { 
+notify-send "Kupa" "System clipboard updated by Kupa shared clipboard !" -i /usr/share/pixmaps/debian-logo.png 
+}
+KUPA_LINUX_RECEIVER_TWOSTEPS_NOTIFY() { 
+notify-send "Kupa" "The Kupa shared clipboard has new content available !" -i /usr/share/pixmaps/debian-logo.png 
+}
+# Mac
+KUPA_MAC_SENDER_NOTIFY() {
+#/usr/local/bin/growlnotify -m "Kupa clipboard updated by $hostArg" "Kupa" --image /Applications/Kupa/debian-logo.png --sticky
+growlnotify -m "The Kupa shared clipboard has been succefully pushed to specified clients !" "Kupa" --image /Applications/Kupa/debian-logo.png --sticky
+}
+KUPA_MAC_RECEIVER_DIRECT_NOTIFY() {
+#/usr/local/bin/growlnotify -m "Kupa clipboard updated by $hostArg" "Kupa" --image /Applications/Kupa/debian-logo.png --sticky
+growlnotify -m "System clipboard updated by Kupa shared clipboard !" "Kupa" --image /Applications/Kupa/debian-logo.png --sticky
+}
+KUPA_MAC_RECEIVER_TWOSTEPS_NOTIFY() {
+#/usr/local/bin/growlnotify -m "Kupa clipboard updated by $hostArg" "Kupa" --image /Applications/Kupa/debian-logo.png --sticky
+growlnotify -m "The Kupa shared clipboard has new content available !" "Kupa" --image /Applications/Kupa/debian-logo.png --sticky
+}
+
+
+
+## Kupa node setup from the settings file ##
+echo "[DEBUG] Kupa Node settings: "
+echo ""
+# 1: check if there's any file left in the './shared' directory of Kupa
+if [ -f "$KUPA_NODE_SETTINGS_FILE" ]
+then
+        echo "[DEBUG] Kupa node settings file found !"
+        # parse the infos from the file
+	
+	# read the one-and-only line in the Kupa node settings file
+	read -r kupa_node_settings_line < "$KUPA_NODE_SETTINGS_FILE"
+	echo "[DEBUG] Stuff read from Kupa node settings file: $kupa_node_settings_line"
+	
+	# we get the line into an array
+	IFS=' ' read -a kupa_node_settings_array <<< "$kupa_node_settings_line"
+	
+	# we check the number of elements in the array
+	echo "[DEBUG] Number of elements in array: ${#kupa_node_settings_array[@]}"
+	
+	if [ "${#kupa_node_settings_array[@]}" -lt "$KUPA_NODE_SETTINGS_PARAMS_NUMBER" ] # if there is less than 2 parameters for the settings line 
+        then
+		echo "[DEBUG] Not enough parameters in the Kupa node settings file > exiting."
+		exit 1
+	fi
+	
+	# debug display of the selected settings
+	echo "[DEBUG] Selected platform from Kupa node settings file: ${kupa_node_settings_array[0]}"
+	echo "[DEBUG] Selected Kupy style from Kupa node settings file: ${kupa_node_settings_array[1]}"
+	
+	# we now check if the first parameter matches "Mac" or "Linux"
+	if [ "${kupa_node_settings_array[0]}" == "$KUPA_PLATFORM_MAC" ] || [ "${kupa_node_settings_array[0]}" == "$KUPA_PLATFORM_NIX" ]
+	then
+		# if it is the case, we set the "$KUPA_PLATFORM variable from it & continue to the second parameter
+		echo "[DEBUG] Registered platform selected > Yes: ${kupa_node_settings_array[0]}"
+		KUPA_PLATFORM=${kupa_node_settings_array[0]}
+		echo "[DEBUG] Kupa platform now in use: $KUPA_PLATFORM"
+	else
+		# else, we exit with an error
+		echo "[DEBUG] Selected platform is not registered > exiting."
+		exit 1
+	fi
+
+	# we now check if the second parameter matches "direct" or "twosteps"
+	if [ "${kupa_node_settings_array[1]}" == "$KUPA_KUPY_STYLE_DIRECT" ] || [ "${kupa_node_settings_array[1]}" == "$KUPA_KUPY_STYLE_2STEPS" ]
+        then
+		# if it is the case, we set the "$KUPA_KUPY_STYLE" variable from it & proceed to the rest of the script commands
+		echo "[DEBUG] Registered kupy style selected > Yes: ${kupa_node_settings_array[1]}"
+                KUPA_KUPY_STYLE=${kupa_node_settings_array[1]}
+                echo "[DEBUG] Kupa kupy style now in use: $KUPA_KUPY_STYLE"
+	else
+		# else, we exit with an error
+                echo "[DEBUG] Selected kupy style is not registered > exiting."
+                exit 1
+	fi
+
+
+        echo "[DEBUG] Kupa node setup succefull !"
+else
+        echo "[DEBUG] Kupa node settings file not found !"
+	echo "[DEBUG] Please create a Kupa node settings file in the Kupa directory or use the provided utility app to do so"
+	# exit with an error
+	exit 1 
+fi
+
+
+
+# skip the rest of the script for now (...)
+#echo "end of script ?"
+#exit 0
+
+
+
+
+
+
+
+## actual script beginning ##
+echo ""
+echo ""
+echo "[DEBUG] Kupa Node execution:"
+echo ""
+# check the number of arguments passed:
+if (( $# != 0 ))
+then
+	echo "Callback: arguments were received > $@"
+	#growlnotify -m "Kupa clipboard updated !" "Kupa" --image /Applications/Kupa/debian-logo.png --sticky
+	
+	# check if we have 2 arguments
+	if (( $# == 2 ))
+	then
+		echo "2 arguments received."
+		
+		# act depending on the first argument
+		if [ "$1" == "-klipboard-update" ]
+		then
+			echo "Clipboard update request"
+			# check if we are receiving remote or local update & act accordingly
+
+			# if the Kupa node is used by a local Kupa script
+			if [ "$2" = "$KUPA_IS_SENDER" ]
+			then
+				echo "We just updated the shared clipboard !"
+				
+				# act depending on the OS
+				# if on Linux
+                        	if [ "$KUPA_PLATFORM" = "$KUPA_PLATFORM_NIX" ]
+                        	then
+                        	        echo "We are on Linux !"
+					# display a popup to inform the user that the shared clipboard has been successfully updated
+					KUPA_LINUX_SENDER_NOTIFY
+											
+                               
+				# if on Mac
+                        	elif [ "$KUPA_PLATFORM" = "$KUPA_PLATFORM_MAC" ]
+                        	then
+                        	        echo "We're on Mac !"
+					# display a popup to inform the user that the shared clipboard has been successfully updated
+					KUPA_MAC_SENDER_NOTIFY	                           
+                        	fi				
+
+
+			# if the Kupa nod has been called from a remote host
+			elif [ "$2" = "$KUPA_IS_RECEIVER" ]
+			then
+				echo "We just received a shared clipboard update !"
+				
+				# act depending on the OS
+                                # if on Linux
+                                if [ "$KUPA_PLATFORM" = "$KUPA_PLATFORM_NIX" ]
+                                then
+                                        echo "We are on Linux !" 
+					
+					# act depending on the Kupa kupy style ( direct || twosteps )
+                                	# if 'direct kupy'
+                                	if [ "$KUPA_KUPY_STYLE" = "$KUPA_KUPY_STYLE_DIRECT" ]
+                                	then
+                                	        echo "direct kupy !"
+						# perform the fcn that copy the content from the './shared/shared_clipboard.kupa' file to the system clipboard
+						KUPA_LINUX_RECEIVER_DIRECT_KUPY
+						# display a popup to inform the user that new content from the Kupa shared clipboard has been copied to his system clipboard
+						KUPA_LINUX_RECEIVER_DIRECT_NOTIFY 
+
+
+                                	# if 'two steps kupy'
+                                	elif [ "$KUPA_KUPY_STYLE" = "$KUPA_KUPY_STYLE_2STEPS" ]
+                                	then
+                                	        echo "two steps kupy !"
+						# display a popup to inform the user that new content is available from the Kupa shared clipboard
+						KUPA_LINUX_RECEIVER_TWOSTEPS_NOTIFY
+                                	fi
+					
+                              
+                                # if on Mac
+                                elif [ "$KUPA_PLATFORM" = "$KUPA_PLATFORM_MAC" ] 
+                                then
+                                        echo "We're on Mac !"
+					
+					# act depending on the Kupa kupy style ( direct || twosteps )
+                                        # if 'direct kupy'
+                                        if [ "$KUPA_KUPY_STYLE" = "$KUPA_KUPY_STYLE_DIRECT" ]
+                                        then
+                                                echo "direct kupy !"
+						# perform the fcn that copy the content from the './shared/shared_clipboard.kupa' file to the system clipboard
+						KUPA_MAC_RECEIVER_DIRECT_KUPY
+                                                # display a popup to inform the user that new content from the Kupa shared clipboard has been copied to his system clipboard
+						KUPA_MAC_RECEIVER_DIRECT_NOTIFY
+
+                                        # if 'two steps kupy'
+                                        elif [ "$KUPA_KUPY_STYLE" = "$KUPA_KUPY_STYLE_2STEPS" ]
+                                        then
+                                                echo "two steps kupy !"
+						# display a popup to inform the user that new content is available from the Kupa shared clipboard
+						KUPA_MAC_RECEIVER_TWOSTEPS_NOTIFY                           
+                                        fi					
+                           
+                                fi
+			
+			fi
+			
+		fi
+		
+	fi	
+
+else
+	echo "Callback: no arguments were received"
+fi
