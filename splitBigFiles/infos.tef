@@ -1,0 +1,6 @@
+# To split big file in bash, we can use the following command:
+split -b2047m inputFilename
+# this 'll output files named xaaa, xab, xac, .. ( & the -b parameter is used to set the size of each part )
+
+# to reconstitue the original big file out of the indvidual parts, we can use the following command:
+cat x* > reconstituedFile
