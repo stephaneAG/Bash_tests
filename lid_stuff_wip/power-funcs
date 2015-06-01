@@ -1,0 +1,80 @@
+# a micro library of helper functions for the power scripts
+
+umask 022;
+
+PATH="$PATH:/usr/bin/X11"
+POWERSTATE="/var/lib/acpi-support/powerstate"
+
+# getXuser: get the user for the specified X display, or if none is
+# specified, then the user for whatever X display we find.
+# input: $displaynum: the X display to query
+# output: $XAUTHORITY: the path to the xauth data used for connecting to the
+#                      detected X display.
+#         $user: the username of the user who owns the display.
+getXuser() {
+	local display userhome uid
+	if [ -z "$displaynum" ]; then
+		display=.+
+	else
+		display=":$displaynum"
+	fi
+	uid=$(ck-list-sessions | awk 'BEGIN { unix_user = ""; } /^Session/ { unix_user = ""; } /unix-user =/ { gsub(/'\''/,"",$3); unix_user = $3; } /x11-display = '\'$display\''/ { print unix_user; exit (0); }')
+
+	if [ -n "$uid" ]; then
+		user=$(getent passwd $uid | cut -d: -f1)
+        	userhome=$(getent passwd $user | cut -d: -f6)
+        	export XAUTHORITY=$userhome/.Xauthority
+	else
+		user=
+		export XAUTHORITY=""
+	fi
+}
+
+# getXconsole: get the information for the active X console, if any.
+# 	calls getXuser to get information related to the logged-in user.
+# input: none
+# output: $XAUTHORITY: the path to the xauth data used for connecting to the
+#                      detected X display.
+#         $DISPLAY: the X display
+#         $user: the username of the user who owns the display.
+getXconsole() {
+	local displaynum
+
+	displaynum=$(ck-list-sessions | awk 'BEGIN { active = 0; } /^Session/ { active = 0; } /active = TRUE/ { active = 1; } active && /x11-display = '\':.+\''/ { gsub(/'\':*'/,"",$3); print $3; exit (0); }')
+
+	if [ -n "$displaynum" ]; then
+		export DISPLAY=":$displaynum"
+		getXuser
+	fi
+}
+
+getState() {
+        /usr/bin/on_ac_power
+        if [ "$?" -eq 1 ]; then
+                STATE="BATTERY"
+        else
+                STATE="AC"
+        fi
+}
+        
+#check our state has actually changed
+checkStateChanged() {
+# do we have our state stashed?
+        if [ -f "$POWERSTATE" ]; then
+                OLDSTATE=$(<$POWERSTATE) 
+                if [ "$STATE" = "$OLDSTATE" ]; then
+                       exit 0
+                else
+#stash the new state
+                        echo "$STATE" > $POWERSTATE
+                fi
+        else
+#we need to stash the new state
+                echo "$STATE" > $POWERSTATE
+        fi
+}
+
+LAPTOP_MODE='/usr/sbin/laptop_mode'
+HDPARM='/sbin/hdparm -q'
+
+LIDSTATE='/var/lib/acpi-support/lidstate'
