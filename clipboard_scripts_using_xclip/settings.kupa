@@ -1,0 +1,17 @@
+## this is a example of Kupa settings file
+## it contains the stuff about the allowed clients, wich will have an alert about new content available from the shared Kupa clipboard
+##
+## syntax is : <ClientName> <ClientIPAdress> <ClientPortNumber> <ClientPathOfKupaDirectory>
+
+## example of a client running on a Mac OS platform
+StephaneAG_macbookpro stephaneadamgarnier 192.168.1.7 22 /Applications/Kupa
+##StephaneAG_imac stephanegarnier 192.168.1.8 22 ~/Applications/Kupa
+
+## example of a client running on another Unix platform
+##StephaneAG_zenbook 192.168.1.18 22 ~/home/stephaneag/Kupa/Kupa.node
+
+## other dummy clients for testing purposes
+##SomeFella_imac 192.168.1.8 3500 ~/Applications/Kupa/Kupa.node
+##SomeOtherDude_desktop 192.168.1.8 3100 ~/NotForWindaubeYet/Kupa.node
+
+##SSS lalalalosdsdsd 
