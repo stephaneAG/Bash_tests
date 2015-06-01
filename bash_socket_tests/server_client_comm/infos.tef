@@ -1,0 +1,7 @@
+# to use 'server.sh', one has to connect to it using, for example:
+nc localhost 2345 # use netcat to connect to localhost on port 2345
+
+# the 'client.sh' file is currently a test file to be used with the "basic netcat server" command:
+sudo netcat -l 2345
+# nb: to keep the netcat server open, one has to use the "-k" parameter, as follows:
+nc -l -k 2345
