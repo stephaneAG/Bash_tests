@@ -1,0 +1,5 @@
+# the file in the current directory are meant to be used as  so-called "HTTP HEADERS ASCII ART"
+# thing is, we're restricted in greyscale & no ANSI or whatever colors ! :/
+
+# to check the header, the following command was used:
+sudo curl -l 127.0.0.1/neatFramework__PHP_testimplm/ > curl_l_output
