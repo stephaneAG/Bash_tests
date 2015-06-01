@@ -1,0 +1,7 @@
+this is a file
+wich contains the word happy multiple times
+when passing it through the nl utility,
+to prepend line numbers in front of each of the lines present in the file
+we can happilly pass an argument that specify to add only lines numbers to some of them,
+the one that actually contain the "happy" text
+( if we chose "happy" as the param arguments )
