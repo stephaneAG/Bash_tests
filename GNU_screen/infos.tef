@@ -1,0 +1,178 @@
+# R: the following controls are TO BE KNOWN BY HEART ! :)
+
+# start a new screen session with session name:
+screen -S <name>
+
+# list running sessions/screens:
+screen -ls
+# outputs the following
+There is a screen on:
+        17492.tefScreenSession  (07/05/2015 21:12:57)   (Attached)
+1 Socket in /var/run/screen/S-stephaneag
+
+# attach to a runnig session:
+screen -x
+
+# the "ultimate attach":
+# attaches to a screen session, &
+# - detaches it from another display if the session is already attached elsewhere
+# - if it doesn't exit, create one
+# - if multiple exists, use the first one
+screen -dRR
+
+# detach a running session:
+screen -d <name>
+
+
+#### USAGE ####
+
+# Escape key is : Ctrl-a ( sometimes written C-a or ^a )
+
+# detach:
+Ctrl-a d
+
+# detach & logout ( quick exit ):
+Ctrl-a  D D
+
+# exit screen:
+Ctrl-a  \
+# Exit all of the programs in screen
+
+# force-exit screen:
+Ctrl-a Ctrl-\
+# not recommended
+
+
+# see help on key bindings:
+Ctrl-a  ?
+
+# create new window:
+Ctrl-a  c
+
+# switch to last-visited active window:
+Ctrl-a  Ctrl-a
+# ( commonly used to flip-flop between two windows )
+
+# switch to window by number:
+Ctrl-a <number>
+# only for windows 0 to 9
+
+#switch to window by number or name:
+Ctrl-a  ' <number or title>
+
+# switch to next window in list:
+Ctrl-a n
+# or
+Ctrl-a <space>
+
+# switch to previous window in list:
+Ctrl-a p
+# or
+Ctrl-a  <backspace>
+
+# see window list:
+Ctrl-a  "
+# ( allows to select a window to switch to )
+
+# show window bar:
+Ctrl-a  w
+# ( if not present )
+
+# close current window:
+??????
+# close all apps in the current window, including shell
+
+# kill current window:
+Ctrl-a k
+# not recommended
+
+# kill all windows:
+Ctrl-a  \
+# not recommended
+
+# rename current window:
+Ctrl-a  A
+
+
+# split display horizontally:
+Ctrl-a  S
+
+# split display vertically:
+Ctrl-a  |
+# or
+Ctrl-a  V
+# ( for the vanilla screen patch )
+
+# jump to next display region:
+Ctrl-a  tab
+
+# remove current region:
+Ctrl-a  X
+
+# remove all regions but the current one:
+Ctrl-a  Q
+
+
+
+####  SCRIPTING ####
+
+# send a command to a named session:
+screen -S <name> -X <command>
+
+# create a new window & run a ping call in it
+screen -S <name> -X screen ping stuff.com
+
+# stuff chars into the input buffer using bash to expand a newline char:
+# ( screen doesn't apply its input parser when doing -X cmds, so we use bash litterals )
+screen -S <name> -X stuff $'s\n'
+# other example
+screen -S <name> [ -p <page> ] -X stuff $'quit\r'
+
+# fuller example
+# - run bash within screen
+screen -Amds bash_shell bash
+# - run top within that bash session
+screen -S bash_shell -p 0 -X stuff $'top\r'
+
+# .. some times later ..
+
+# - stuff 'q' to tell top to quit
+screen -S bash_shell -X stuff 'q'
+# - stuff 'exit\n' to exit bash session
+screen -S bash_shell -X stuff $'exit\r'
+
+
+####  MISC ####
+
+# redraw window:
+Ctrl-a Ctrl-l
+
+# enter copy mode:
+# ( also used for viewing scrollback buffer )
+Ctrl-a [
+# or
+Ctrl-a  <esc>
+
+# paste:
+Ctrl-a  ]
+
+# monitor window for activity:
+Ctrl-a  M
+
+# monitor window for silence:
+Ctrl-a  _
+
+# enter digraph ( aka Unicode char ) ( for producing non-ASCII chars ):
+# see the following for some of the 2-chars codes:
+# https://pthree.org/2006/08/11/screen-digraphs/
+Ctrl-a  Ctrl-v
+
+# lock ( password protect ) display:
+Ctrl-a  x
+
+# enter screen command:
+Ctrl-a  :
+
+# enable logging in the screen session:
+Ctrl-a  H
+
