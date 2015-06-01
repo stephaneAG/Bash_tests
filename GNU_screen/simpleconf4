@@ -1,0 +1,41 @@
+# Screen config file - simple conf
+
+# skip the startup message
+startup_message off
+
+# add a session name
+sessionname simpleconf_session
+
+## layout & colors ##
+
+# use 'bottom screen bar'
+caption always
+
+# customise 'bottom screen bar'
+#caption string "%{kw}%-w%{wr}%n %t%{-}%+w"
+caption string "%?%F%{= Bk}%? %C%A %D %d-%m-%Y %{= kB} %t%= %?%F%{= Bk}%:%{= wk}%? %n "
+
+# customise the bottom line
+hardstatus alwayslastline "%{b}[ %{B}%H %{b}][ %{w}%?%-Lw%?%{b}(%{W}%n*%f %t%?(%u)%?%{b})%{w}%?%+Lw%?%?%= %{b}][%{B} %m/%d %{W}%C%a %{b}]"
+
+## split screen, & then launch stuff / execute commands ##
+
+# command to be started on the first screen
+screen 0 top
+
+# split vertically
+split -v
+
+# split horizontally
+#split
+
+# switch focus
+focus down
+screen 1 vim
+
+# split horizontally
+split
+
+# switch focus
+focus down
+screen ./billy_infinite_looper.sh
