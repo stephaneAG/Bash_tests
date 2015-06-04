@@ -11,3 +11,5 @@ ${var#pattern}	Remove from shortest front pattern
 ${var##pattern}	Remove from longest front pattern
 ${var/pattern/string}	Find and replace (only replace first occurrence)
 ${var//pattern/string}	Find and replace all occurrences
+
+var=$(echo -n $'\n'; echo -n x); var="${var%x}"; echo -n "$var" # $var == "\n"
