@@ -1,0 +1,54 @@
+# Follows useful reminders on how to get <n> previous call <y> arg(s)
+# the last part is definately AWESOME (!) ..
+
+# the basic history command
+history
+# the n-th command
+!n
+# the last command
+!! ( or !-1 )
+# the last command first argument
+!^
+# the last command last argument
+!$
+# last command n-th argument
+!:n ( or !!:n )
+# last command "invoked stuff"
+!!:0
+
+# .. and this is where it gets interesting:
+# n-th command last argument
+!-1:$
+# n-th command y-th argument
+!-n:y
+# mixing args from two different commands
+!-n1:y1!-n2:y2
+# get all args from n-th command
+!-1:1* ( or !-1:1-$ , or !-1:* , or (silliest way ^^) !-1:^-$)
+# get a range of args as so
+!-n:a-z # R: != bash's "{a..z}" syntax
+
+# also very useful, ":p" modifier
+# echo out stuff instead of trying to call them ( ex with a range of prev args)
+!-n:a-z:p
+# chop-off head, or tail, or extension
+# nb(s): we can use ":r" twice for ex, for ".tar.gz"
+# the ":e" modifier is also available & get only the ultimate extension
+echo "DIR: !!:$:h:p FILENAME: !!:$:t:p PATH_WITHOUT_EXT: !!:$:r:p FILENAME_WITHOUT_EXT: !!:$:r:t:p"
+# other ex
+echo "DIR: !!:$:h:p FILENAME: !!:$:t:p EXT: !!:$:e:p PATH_WITHOUT_EXT: !!:$:r:p FILENAME_WITHOUT_EXT: !!:$:r:t:p"
+# useful ? sure:
+echo lol pffff..
+# check what a "recomposed command" 'd look like using ":p"
+!!:0:p !!:2:p
+# if it looks good to be called ( correct substitution ), hit Ctr-P
+# yup, automatically typed ;) => hit enter :D
+
+# history commands substitution
+!-n:s/original/new/
+# substitute every match by adding the "g" arg to the "s"
+touch test1 test2 test3
+mkdir !!:*:gs/file/dir/
+# or better
+touch testFile{1..4}
+mkdir !!:*:gs/testFile/testDir/
