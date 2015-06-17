@@ -38,7 +38,7 @@ Ctrl-b => move backward one char
 Ctrl-d => delete char under the cursor OR exit bash if no typed stuff
 Ctrl-h => delete char before the cursor
 
-Ctrl-dt => swap char under the cursor with previous one
+Ctrl-t => swap char under the cursor with previous one
 
 # fewer notes
 #^C, ^Z, ^S, and ^Q are handled by the terminal device, and are set using the stty command.
@@ -57,7 +57,7 @@ Alt-. => use last word of previous command
 
 # -- Command Control Shortcuts --
 
-Ctrl-l => clear the screen
+Ctrl-l => clear the screen while preserving any text currently typed
 Ctrl-s => stop the ouput to the screen ( for long running verbose command )
 # above is actually not a bash feature but a *nix term (stty ixon mode ) one
 Ctrl-q => allow ouput to the screen ( is previously stopped using the above )
