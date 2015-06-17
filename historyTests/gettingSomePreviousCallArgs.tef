@@ -8,6 +8,10 @@
 Ctrl-a => go to start of the cli
 Ctrl-e => go to end of the cli
 
+# WOOOOOOT !!! I found the following 2 before trying to set them .. neat ! :D
+Ctrl-LeftArrow => move to beginning of word or beginning of previous word
+Ctrl-RightArrow => move to end of word or end of next word
+
 Ctrl-k => kill(cut) from cursor to end of the cli
 Ctrl-u => kill(cut) from start of the cli to cursor
 Ctrl-w => kill(cut) one word backward ( from cursor to start of word )
