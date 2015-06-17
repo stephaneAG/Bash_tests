@@ -1,0 +1,29 @@
+# to execute a script in shell when a key is pressed
+# ex: read from a file & display that content in the terminal
+#
+# the "bind" built-in command maps a keyboard shortcut so that it executes a cmd/shell script
+# ex: pwd when pressing the F12 key
+bind '"\e[24~":"pwd\n"'
+# fix for if we have stg already on the line ( the space prevent the bell from ringing )
+bind '"\e[24~":"\C-k \C-upwd\n"'
+# according to some user(s), when sourced , the "bind" part & overall parentheses aren't necessary/mandatory
+'"\e[21~":"\C-k \C-uecho \"loooo tef\"\n"'
+# to discover the code of a key/key combination
+read
+# then type the key ;)
+# it returns stg like ^[[21~
+# we can also use bind to map key sequence by mapping the bind key code as \ep or \eq
+
+# R: escape sequences
+\\ : backslash
+\a : alert (BEL)
+\b : backspace
+\c : produce no further output
+\e : escape
+\f : form feed
+\n : new line
+\r : carriage return
+\t : horizontal tab
+\v : vertical tab
+\0NNN : byte with octal value NNN (1 to 3 digits)
+\xHH : byte with hexadecimal value HH (1 to 2 digits)
