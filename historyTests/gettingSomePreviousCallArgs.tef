@@ -207,6 +207,16 @@ lclip(){ history -p '!!'|tr -d \\n|pbcopy; }
 #lclip(){ [[ "$(uname)" == "Linux" ]] && history -p '!!'|tr -d \\n | xclip -selection c || history -p '!!'|tr -d \\n|pbcopy }
 # shortest
 lclip(){ [[ "$(uname)" == "Linux" ]] && clip='xclip -selection c' || clip='pbcopy'; history -p '!!'|tr -d \\n | $clip; }
+# to accept an arg for anything other than the last command entirely
+# check test:
+# testfcn(){ [[ "$1" == "" ]] && cmd='!!' || cmd="$1"; echo $cmd; }
+# clipboard the command WITH THE HISTORY EXPANSION --> well, seemed to work for some time but .. did I break it ? :/
+lclip(){ [[ "$1" == "" ]] && cmd='!!' || cmd="$1"; [[ "$(uname)" == "Linux" ]] && clip='xclip -selection c' || clip='pbcopy'; history -p $cmd | tr -d \\n | $clip; }
+# clipboard the command RAW ( HISTORY EXPENSION DONE, aka !-1:1 become the previous 1st param in the command )
+lclipr(){ [[ "$1" == "" ]] && cmd='!!' || cmd="$1"; [[ "$(uname)" == "Linux" ]] && clip='xclip -selection c' || clip='pbcopy'; history -p "$cmd" | tr -d \\n | $clip; }
+# the aboves can accept a param to be passed t ohistory as such: lclip '!-2'
+
+
 
 #cclip (current command to clipboard )
 # via Ctrl-] shortcut ( Ctrl-alt gr-] )
@@ -215,8 +225,8 @@ bind '"\C-]":"\C-e\C-u xclip -selection c <<"EOF"\n\C-y\nEOF\n"'
 # Mac
 bind '"\C-]":"\C-e\C-u pbcopy <<"EOF"\n\C-y\nEOF\n"'
 # cross platforms
-cclip(){ [[ "$(uname)" == "Linux" ]] && clip='xclip -selection c' || clip='pbcopy'; bind '"\C-]":"\C-e\C-u $clip <<"EOF"\n\C-y\nEOF\n"'; }
-
+#cclip(){ [[ "$(uname)" == "Linux" ]] && clip='xclip -selection c' || clip='pbcopy'; bind '"\C-]":"\C-e\C-u $clip <<"EOF"\n\C-y\nEOF\n"'; }
+[[ "$(uname)" == "Linux" ]] && clip='xclip -selection c' || clip='pbcopy'; bind '"\C-]":"\C-e\C-u $clip <<"EOF"\n\C-y\nEOF\n"';
 
 # instead of pressing up to find a command, just type in the first few letters
 # of a prev one and bash 'll scroll through cmds that started with those
