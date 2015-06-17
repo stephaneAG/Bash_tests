@@ -1,13 +1,66 @@
 # Follows history stuff & useful reminders on how to get <n> previous call <y> arg(s)
-# the last part is definately AWESOME (!) ..
+# the last part is definately AWESOME -> "Mind-melting goodness" haha (!) ..
 
 # intro
 # adjusting default settings of bash history
-# echo $HISTFILESIZE # how manu commans are kept in the history file
-# 
+# $HISTFILESIZE # how many commands are kept in the history file -> def: 2000
+#               => could be made even larger to be examined later ( 10000 )
+# $HISTSIZE     # how many are stored in memory for the current session -> def: 1000
+#               => could be upgraded to a reasonable cap ( 5000  )
+# to preserve the bash history through sessions ( that is, prevent its update overwrite )
+shopt -s histappend # histappend setting
+# to have bash add cmds to the history instead of waiting the end of each session
+# ( aka to enable commands in one terminal to be instantly available in another )
+# we can do so by setting or appending the "history -a" cmd to the PROMPT_COMMAND param
+# which contains comands executed before each new prompt, R)
+# 1: we append to history immediately with history -a, 
+# 2: clear the current history in our session with history -c, 
+# 3: read the history file that we just append to back into our session history using history -r
+# ex:
+export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
+
 
 # the basic history command
 history
+# truncate the output
+history n
+# find all history commands that involve a certain string
+history | grep cmd
+
+# scrolling back in history
+# instead of using the arrows ( which is actually pretty fine for me)
+# we can also use Ctrl-p to move backward in history & Ctrl-n to move forward
+# the ALT-Shift stuff doesn't work for me on Ubuntu 14.04 .. yet ?
+
+# searching through bash history
+# we can type Ctrl-r, begin typing part of the prev cmd
+# if it matches our search, enter, else, use Ctrl-r again to see next result
+# don't know yet what Ctrl-s ( to go backward in search ) is mapped to on my current system
+# to search using stg already typed at the prompt, we can Ctrl-a, Ctrl-r, Ctrl-y, and Ctrl-r again 
+# (CTRL-aryr  -> copyright Justin Ellingwood, the author of one of the articles I stumbled upon => thx, dude ! ;p)
+
+# events designation
+# we can execute the last ssh cmd ( that is, the last cmd starting with ssh):
+!ssh
+# if we're looking for a string that is not at the beginning of a command, we can surround it with "?" chars
+# ex, to repeat last apt-cache search cmd
+!?search?
+
+# quick search & replace (variation on !!, the last history cmd ), useful for misspellings
+#^original^replacement^
+# ex:
+cat /the/file.texte
+^texte^txt^
+
+# words designators
+# helps to select a part of a cmd
+# ex:
+ls /some/dir
+cd !!:1 # or cd !1 ( as we're operating on the last cmd )
+# R: we can refer to the first arg as "^" & the last as "$"
+
+# ( event designators )
+# Execute cmds from the bash history ( the initial purpose of this file, nb)
 # the n-th command
 !n
 # the last command
