@@ -1,0 +1,20 @@
+# like un-named pipes, named pipes/fifo's provide a form of Inter-Process Comm
+# with anonymous pipes, there's one reader & one writer
+# with named pipes, any number of readers & writers may be present
+# named pipes are visible to the fs & can be read/written as other files
+
+# named pipes are created via mkfifo or mknod
+mkfifo /tmp/testpipe
+mknod /tmp/testpipe p
+
+
+# ----
+check the "readFromPipe.sh" & "writeToPipe.sh" files for useful tests
+# ----
+
+
+# using pipes with network connections
+mkfifo input
+somescript -f input
+nc -lvvp 20000 > input
+# & then on same machine or another send data to port 20000
