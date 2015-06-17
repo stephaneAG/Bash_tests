@@ -1,3 +1,72 @@
+# the ability to edit cmd-line is provided by the GNU Readline lib
+# it's used by many *nix apps besides bash,so absurd ease in "on the way"
+# by def, it uses emacs key bindings, but can be conf to use vi editing mode
+
+
+# -- Command Editing Shortcuts --
+
+Ctrl-a => go to start of the cli
+Ctrl-e => go to end of the cli
+
+Ctrl-k => kill(cut) from cursor to end of the cli
+Ctrl-u => kill(cut) from start of the cli to cursor
+Ctrl-w => kill(cut) one word backward ( from cursor to start of word )
+Ctrl/Alt-backspace => same as above ( chrome adress bar as Ctrl-backspace ;p )
+
+Ctrl-y => yank(paste) word/text previously killed(cut) after the cursor
+
+Ctrl-xx => move back & forth from one cursor position to another ( bookmark )
+
+Alt-b => move one word backward or to the start of the word the cursor is on
+Alt-f => move one word forward or to the end of the word the cursor is on
+
+Alt-d => kill(cut) from cursor to end of word ( one [hole] word forward )
+
+Alt-c => capitalize from cursor to end of word ( one [hole] word forward )
+Alt-u => uppercase from cursor to end of word ( one [hole] word forward )
+Alt-l => lowercase from cursor to end of word ( one [hole] word forward )
+
+Alt-t => swape current word with previous
+
+Ctrl-f => move forward one char
+Ctrl-b => move backward one char
+
+Ctrl-d => delete char under the cursor OR exit bash if no typed stuff
+Ctrl-h => delete char before the cursor
+
+Ctrl-dt => swap char under the cursor with previous one
+
+# fewer notes
+#^C, ^Z, ^S, and ^Q are handled by the terminal device, and are set using the stty command.
+# on Macs, use ESC instead of ALT ;)
+## TO MOVE ELSEWHERE IN MY HEAD ;) => quickly copy stuff & append extension only
+cp /some/file.ext{,.nexExt}
+
+# -- Command Recall Shortcuts --
+
+Ctrl-r => search the history backwards
+Ctrl-g => escape from history searchign mode
+Ctrl-p => previous command in history ( walk back through cmd history )
+Ctrl-n => next command in history ( walk forward through cmd history )
+Alt-. => use last word of previous command
+
+
+# -- Command Control Shortcuts --
+
+Ctrl-l => clear the screen
+Ctrl-s => stop the ouput to the screen ( for long running verbose command )
+# above is actually not a bash feature but a *nix term (stty ixon mode ) one
+Ctrl-q => allow ouput to the screen ( is previously stopped using the above )
+Ctrl-c => terminate the command  ( indeed ! ^^ )
+Ctrl-z => suspend/stop the command
+
+
+
+
+----------------------------------------------------------------------------------
+
+
+
 # Follows history stuff & useful reminders on how to get <n> previous call <y> arg(s)
 # the last part is definately AWESOME -> "Mind-melting goodness" haha (!) ..
 
@@ -139,3 +208,17 @@ bind '"\C-]":"\C-e\C-u xclip -selection c <<"EOF"\n\C-y\nEOF\n"'
 bind '"\C-]":"\C-e\C-u pbcopy <<"EOF"\n\C-y\nEOF\n"'
 # cross platforms
 cclip(){ [[ "$(uname)" == "Linux" ]] && clip='xclip -selection c' || clip='pbcopy'; bind '"\C-]":"\C-e\C-u $clip <<"EOF"\n\C-y\nEOF\n"'; }
+
+
+# instead of pressing up to find a command, just type in the first few letters
+# of a prev one and bash 'll scroll through cmds that started with those
+# ex: for vim, type v, then press up,up,up,..
+# -> faster, simpler alternative to the Ctr-r search, still so useful
+bind '"\e[A":history-search-backward'
+bind '"\e[B": history-search-forward'
+# addition from another user in the maaaany comments
+# allows to press Ctrl-p / Ctrl-n to init the search with already typed text
+#"\C-p": history-search-backward
+#"\C-n": history-search-forward
+# R:  mac users will need to install the bash-completion file
+# http://jfdm.wordpress.com/2010/05/04/bash-completion-mac-os-x/
