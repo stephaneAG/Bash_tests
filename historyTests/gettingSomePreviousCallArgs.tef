@@ -1,5 +1,10 @@
-# Follows useful reminders on how to get <n> previous call <y> arg(s)
+# Follows history stuff & useful reminders on how to get <n> previous call <y> arg(s)
 # the last part is definately AWESOME (!) ..
+
+# intro
+# adjusting default settings of bash history
+# echo $HISTFILESIZE # how manu commans are kept in the history file
+# 
 
 # the basic history command
 history
@@ -52,3 +57,32 @@ mkdir !!:*:gs/file/dir/
 # or better
 touch testFile{1..4}
 mkdir !!:*:gs/testFile/testDir/
+
+
+# TO ADD TO MY ALIASES/FCNS SET
+# lclip ( last command to clipboard )
+# R:
+# echo $HISTSIZE --> 1000
+# echo "!!" | xclip -selection c --> echo "echo $HISTSIZE" | xclip -selection c => echo 1000
+# history -p '!-1' | xclip -selection c # ok, but interprets the new line & executes stuff if pasted in a term
+# history -p '!-1' | tr -d \\n | xclip -selection c # works fine
+# Linux
+lclip(){ history -p '!!'|tr -d \\n | xclip -selection c; }
+# Mac
+lclip(){ history -p '!!'|tr -d \\n|pbcopy; }
+# Nb: we could check if arg(s) is/are passed to be used as !-n:a-z:m
+# aka, if any arg, pass it to history as a replacement for '!!'
+# cross platforms
+#lclip(){ if [[ "$(uname)" == "Linux" ]]; then history -p '!!'|tr -d \\n | xclip -selection c; else history -p '!!'|tr -d \\n|pbcopy; fi }
+#lclip(){ [[ "$(uname)" == "Linux" ]] && history -p '!!'|tr -d \\n | xclip -selection c || history -p '!!'|tr -d \\n|pbcopy }
+# shortest
+lclip(){ [[ "$(uname)" == "Linux" ]] && clip='xclip -selection c' || clip='pbcopy'; history -p '!!'|tr -d \\n | $clip; }
+
+#cclip (current command to clipboard )
+# via Ctrl-] shortcut ( Ctrl-alt gr-] )
+# Linux
+bind '"\C-]":"\C-e\C-u xclip -selection c <<"EOF"\n\C-y\nEOF\n"'
+# Mac
+bind '"\C-]":"\C-e\C-u pbcopy <<"EOF"\n\C-y\nEOF\n"'
+# cross platforms
+cclip(){ [[ "$(uname)" == "Linux" ]] && clip='xclip -selection c' || clip='pbcopy'; bind '"\C-]":"\C-e\C-u $clip <<"EOF"\n\C-y\nEOF\n"'; }
