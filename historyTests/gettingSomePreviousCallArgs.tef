@@ -2,6 +2,10 @@
 # it's used by many *nix apps besides bash,so absurd ease in "on the way"
 # by def, it uses emacs key bindings, but can be conf to use vi editing mode
 
+# Terminal Window Control on Ubuntu 14.04 defaults
+
+Ctrl-- ( Ctrl-[key with 6/-/|] ) => shrink terminal window size
+Ctrl-+ ( Ctrl-Shift-[key with +=}] ) => grow terminal window size
 
 # -- Command Editing Shortcuts --
 
