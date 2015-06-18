@@ -1,0 +1,21 @@
+⦿ ⦾ ➳ ➴ ➵ ➶ ➷ ➸ ➹ ✓ ✗ ⚛
+like the above glyphs ? remember the following !
+
+# to get the 6 digits / 3 bytes of a unicode char in bash
+echo -n ☠ | hexdump
+0000000 98e2 00a0                              
+0000003
+
+# to try it
+echo -e "\xE2\x98\xA0"
+☠
+
+
+# other ex
+echo -n ✓ | hexdump
+0000000 9ce2 0093                              
+0000003
+
+# to try it, again
+echo -e "\xE2\x9c\x93"
+✓
