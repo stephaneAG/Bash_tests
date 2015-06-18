@@ -18,3 +18,97 @@ mkfifo input
 somescript -f input
 nc -lvvp 20000 > input
 # & then on same machine or another send data to port 20000
+
+
+## -- to digg --
+# opening a pipe in read-write mode to avoid to block the pipe is not yet opened
+# 'd also instanciate it if not already
+exec 3<> /tmp/p
+# alternatively / portably
+: < /tmp/p & exec 3> /tmp/p
+# instead of having each process open the named pipe, we can also do
+cmd >&3
+# and in the end, do the following to close the writing end
+# to let readers know it's finished
+exec 3>&-
+
+
+
+# -- notes from "Using named pipes & process substitution" --
+# to split a stream, remember "tee"
+
+# where pipes don't work
+# situation:
+program --in1 in1.txt --in2 in2.txt --out1 out1.txt \
+    --out2 out2.txt > stats.txt 2> diagnostics.stderr
+
+# enters named pipes
+mkfifo fqin
+echo "hello, named pipes" > fqin &
+cat < fqin
+rm fqin
+
+# enters process substitution ( "anonymous named pipes" ^^ )
+# process substitution syntax: <(command arg1 arg2)
+# the shell runs these commands, and passes their output to a file descriptor
+# ex: on Unix systems, /dev/fd/11
+# file descriptor will then be substituted by your shell where the call to <() was
+# unning a command in parenthesis in a shell invokes a seperate subprocess,
+# so multiple uses of <() are run in parallel automatically
+#
+# Additionally, as a subshell, each <() can include its own pipes,
+# so crazy stuff like <(command arg1 | othercommand arg2) is possible, and sometimes wise.
+
+# what it 'd look like in the simple above example
+program --in1 <(makein raw1.txt) --in2 <(makein raw2.txt) \
+   --out1 out1.txt --out2 out2.txt > stats.txt 2> diagnostics.stderr
+# check
+ps aux | grep program
+
+# what about compressing stuff as well ?
+program --in1 <(makein raw1.txt) --in2 <(makein raw2.txt) \
+   --out1 >(gzip > out.txt.gz) --out2 >(gzip > out2.txt.gz) > stats.txt 2> diagnostics.stderr
+   
+   
+   
+# -- Notes from "Process substitution & named pipes" --
+# using cat to concat 2 files to a file instead of stdout
+cat table1.csv table2.csv > table12.csv
+# the ">" ( redirection operator ) can also be used to empty a file or create a new file,
+# simply byt not specifying the source
+> all.csv # 'll empty it if it exist, otherwise 'll create it
+
+# the "|" ( pipe operator ) is used to pass a stream of data from a process to another,
+# that is, the stdout of one is used as stdin for the second
+# ex: using the word count program
+cat table1.csv table2.csv | wc
+
+# the bash shell provides more meths to handle cases where a program requires multiple inputs,
+# ex when comparing two files/streams, 
+# or when a program has multiple outputs that needs to be piped to other processes
+# the process substitution mthd enables to substitute program parameters with processes,
+# so that the output of these are considered the parameter values
+# ex: the diff3 cmd compares the content of three files & outputs description of differences between them
+# to compare the content of three dirs, that is, listing the files & dirs in each, we can use:
+diff3 <(ls $dir1) <(ls $dir2) <(ls $dir3)
+# /!\ there must be no space between the "<" & the left parenthesis
+
+# if a command parameter specifies an output file, process substitution can be appied as well
+# in that case, the output parameter is replaced with the expression >(..), 
+# which contains the command the uses the output being generated for this (virtual) file as input
+# ex:
+tar cfv >(bzip2 -c > dir1.tar.bz2) $dir1
+# it executes tar, which expect a filename for file & a dir to tar
+# the 1st arg ( the expected filename ) has been substituted with a process substitution expression
+# the command inside it is appied to the (virtual) file being written by the tar command
+# that is, it's used as stdin for the bzip2 command, which compresses it & output the result to a new file
+
+# a cool feature of Linux is the  named pipes mechanism
+# it can connect two programs together that were not necesseraly designed to work together,
+# withing any "writing to disk overhead"
+# to make one
+mkfifo fifo1
+# to send the output of ps to it
+ps > fifo1
+# if we enter the following, the otput from ps 'll be passed to more using the pipe
+more < fifo1
