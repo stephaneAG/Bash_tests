@@ -1,0 +1,162 @@
+# TODO ----------------------------
+- get back stuff from the RPis ( routes, init.d's, whibox daemons, ..)
+- get bak stuff from pengpod (mario boot, pygame, touch, hide cursor btns mapping, ..  )
+- write "final" tut on daemons/init scripts using my notes on paper ( .. )
+# ---------------------------------
+
+
+
+# ---------------------------------
+# "How to start Script as Daemon – DEBIAN – UBUNTU"
+# see http://ram.kossboss.com/start-script-daemon-debian-ubuntu/
+#
+# the following shows how start a script or a service on boot & turn it off on shutdown
+# nb: all scripts should use full paths, or vars that point to full paths
+# nb: LSB warnings when doing "update-rc.d foobar defaults" ? -> it's just a warning
+# nb: use /bin/sh, not /bin/bash in the service script
+#     ( bash should be fine, but on a debian sys, out of 60 /etc/init.d service files, 2 used bash, 58 sh)
+
+# for a detailed explanation of the comments present in an init file ( like below ), see /etc/initd.t/README
+### BEGIN INIT INFO
+# Provides: skeleton
+# Required-Start: $remote_fs $syslog
+# Required-Stop: $remote_fs $syslog
+# Should-Start: $portmap
+# Should-Stop: $portmap
+# X-Start-Before: nis
+# X-Stop-After: nis
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# X-Interactive: true
+# Short-Description: Example initscript
+# Description: This file should be used to construct scripts to be
+# placed in /etc/init.d.
+### END INIT INFO
+
+# Now, we'll see two things: programs that run quickly, and programs that run forever
+
+# 1: Programs than run quickly
+# ones that run once & quick, like "date"
+# "service script start" 'll start everything as a child of sysvinitd so it won't be tied to shell
+# aka, we can close the shell & program still runs
+
+# be root:
+sudo -i
+# create the script file:
+gedit /etc/init.d/foobar-once
+# add the content of the script
+#!/bin/sh
+#Filename: /etc/init.d/foobar-once
+
+# The following part always gets executed.
+echo "some words and operations and variable settings"
+
+# The following part carries out specific functions depending on arguments.
+case "$1" in
+start)
+echo "Starting foobar"
+echo "do some program once, like: date"
+date
+;;
+stop)
+echo "Stopping foobar"
+echo "stop a process, like: date - although date doesnt run long enough to ever need to be stopped"
+killall date
+;;
+*)
+echo "Usage: /etc/init.d/foobar-once {start|stop}"
+exit 1
+;;
+esac
+
+exit 0
+
+# give it necessary permissions / make it executable
+chmod 755 /etc/init.d/foobar-once
+# now, to start the service:
+/etc/init.d/foobar-once
+# or
+service foobar-once start
+# to ensure it runs on start up ( in systemd terms, to enable the service ):
+update-rc.d foobar-once defaults
+# to remove it from the start up ( in systemd terms, to disable the service ):
+update-rc.d -f foobar-once remove
+
+
+# 2: Programs than run forever
+# ones that run forever like ademons or services, or looping scripts
+# ex of a looping script: check if cron is running, & if it dies, restart it
+
+# cron monitor script: turns cron on if it's dead
+# (turns it on every 5 sec,, but starting cron again with services won't start it again if it's already running )
+
+# create the script file:
+gedit /root/monitor/monitorcron.sh
+# add the content of the script
+#!/bin/sh
+#
+# Note whatever this outputs, will not be shown on screen because it gets started by the init process on boot, plus we shut this process up with > /dev/null 2> /dev/null
+# if this needs to say anything important, which it does it can go to /var/log/monitor-cron.log
+#
+# starts cron if needed, if cron already started, it wont start it again
+INTERVAL1=5
+echo >> /var/log/monitor-cron.log
+echo "==== Monitoring Cron ==== - DATE: `date` `date +%s`" >> /var/log/monitor-cron.log
+echo "every dot, is $INTERVAL1 seconds passed, and checked for cron" >> /var/log/monitor-cron.log
+echo "if cron is on it will not turn it on" >> /var/log/monitor-cron.log
+echo "if cron is off it will try to turn it on with 'service cron start'" >> /var/log/monitor-cron.log
+while true; do
+service cron start
+echo -n "." >> /var/log/monitor-cron.log
+done
+
+# create the service file:
+gedit /etc/init.d/monitor-cron
+# add the content of the service
+#!/bin/sh
+#Filename: /etc/init.d/monitor-cron
+
+# The following part always gets executed.
+echo "Monitor Cron Service"
+
+# The following part carries out specific functions depending on arguments.
+case "$1" in
+start)
+echo "Monitor Cron Service - STARTED"
+# if this file continously outputs to the shell, you should smake it be quiet with > /dev/null and 2> /dev/null
+# if it needs to report anything, have it save logs to /var/log (like i do with it to /var/log/monitor-cron.log)
+/root/monitor/monitcron.sh 2> /dev/null > /dev/null
+;;
+stop)
+echo "Monitor Cron Service - STOPPED"
+killall monitcron.sh
+;;
+*)
+echo "Usage: /etc/init.d/monitor-cron {start|stop}"
+exit 1
+;;
+esac
+
+exit 0
+
+# give it necessary permissions / make it executable
+chmod 755 /etc/init.d/monitor-cron
+# to enable it ( so that it turn on during boot up ):
+update-rc.d monitor-cron defaults
+# to enable it ( so that it doesn't turn on during boot up ):
+update-rc.d -f monitor-cron remove
+
+# now:
+# - if we were to start the script like "/root/monitor/monitcron.sh",
+#   it 'd die when turning off shell/terminal/putty session
+# - if we were to start the script like "nohup /root/monitor/monitcron.sh &",
+#   it won't be neat ( .. )
+# - if we were to start the script like "/etc/init.d/monitor-cron start",
+#   it'd also die when turning off shell/terminall/putty (we can check with "pstree" to see it's tied to bash  )
+# However, if we were to start the service like
+service monitor-cron start
+# then it'd be tied to PID1 ( init process ), & thus presist through closing of shells & terminals,
+# and it'll always be alive until being killed or closed with
+service monitor-cron stop
+# with "pstree", we'd see it's tied to PID1
+# ---------------------------------
