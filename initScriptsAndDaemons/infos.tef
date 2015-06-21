@@ -160,3 +160,55 @@ service monitor-cron start
 service monitor-cron stop
 # with "pstree", we'd see it's tied to PID1
 # ---------------------------------
+
+
+
+# ---------------------------------
+# "Ubuntu 12.04 - create a simple daemon (service) for your application"
+# see http://kosiara87.blogspot.fr/2013/10/ubuntu-1204-create-simple-daemon.html
+#
+# creating a daemon / service is as simple as creating a bash script in /etc/init.d
+# to simplify the creation of such script, we can copy the skeleton in /etc/init.d/skeleton
+# the script needs to handle the following daemon commands:
+# start , stop, restart/reload, force-reload, status
+# once the daemon script has been placed in /etc/init.d, we give it the right permissions
+sudo chmod 755 /etc/init.d/daemonScript
+# to enable the daemon to start at boot
+update-rd.d daemonScript defaults 97 03
+# see http://manpages.ubuntu.com/manpages/hardy/man8/update-rc.d.8.html
+# to disable the daemon from starting at boot
+update-rd.d -f daemonScript remove
+# ---------------------------------
+
+
+
+# ---------------------------------
+# "UbuntuBootupHowto"
+# see https://help.ubuntu.com/community/UbuntuBootupHowto
+#
+# updates on the boot process ( following infos are tested on 11.04 )
+#
+# Dirs & config
+# - /etc/init is where the upstart init configs lives
+#   while not scripts themselves, they essentially execute whatever is required to replace sysvinit scripts
+# - /etc/init.d is where all the traditional sysvinit scripts & the backward compatible scripts for upstart lives
+#   the backward compatible scripts run "service myservice start" instead of doing stg else
+# - /etc/init/rc-sysinit.conf controls execution of traditional scripts added manuallr / with update-rc.d to
+#   traditional runlevels in /etc/rc*
+# - /etc/default has configuration files allowing to control the behavior of both traditional sysvinit scripts
+#   and new upstart configs
+#
+# Using services
+# - starting a service:
+"/etc/init.d/myservice start" ( traditional ), or "service myservice start" (upstart )
+# - stoping a service:
+"/etc/init.d/myservice stop" ( traditional ), or "service myservice stop" (upstart )
+# - getting a list of sevices ( nb: upstart 'll show both traditional & upstart services )
+"ls /etc/init.d"( traditional ), or "service --status-all" ( upstart )
+# - adding a service to Default runlevels
+"update-rc.d apacha2 defaults" ( traditional )
+# there's no concept of runlevels for upstart, everythg is event driven with deps
+# we'd add an upstart config to /etc/init & potentially source a conf file in /etc/defaults to allow users to
+# override the default behavior
+# - removing a service from Default runlevels
+rm /etc/rc*/*myscript
