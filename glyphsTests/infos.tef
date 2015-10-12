@@ -1,3 +1,9 @@
+[UPDATE OF 12/10/2015]
+Als:
+try '... | hexdump -C' to get a neat 98 e2 00 a0 output
+for even more niceties, see what I built some times after the current test(s): https://github.com/stephaneAG/stag_ils
+[END OF UPDATE]
+
 ⦿ ⦾ ➳ ➴ ➵ ➶ ➷ ➸ ➹ ✓ ✗ ⚛
 like the above glyphs ? remember the following !
 
